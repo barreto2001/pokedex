@@ -2,9 +2,14 @@
   <div id="nav">Pokedex</div>
 
   <div id="search-zone">
-    <input type="search" name="" id="" placeholder="Busca tu pokemon" />
+    <div>
+      <input type="search" #search placeholder="Busca tu pokemon" />
+      <button (click)="searchPokemon(search.value)" id="btn__search">
+        <img src="../../assets/img/icon/search-regular.png" alt="search" />
+      </button>
+    </div>
     <br /><br />
-    <select name="" id="">
+    <select name="" id="" (change)="getPokemonsType($event)">
       <option value="">Tipo de pokemon</option>
       <option value="normal">Normal</option>
       <option value="fighting">Lucha</option>
@@ -29,89 +34,99 @@
   </div>
 
   <section id="list-pokemon">
+    @for(pokemon of pokemons; track pokemon.name){
     <div class="card">
       <div class="card__img">
-        <img
-          src="https://assets.pokemon.com/assets/cms2/img/pokedex/detail/025.png"
-          alt="pikachu"
-        />
+        <img [src]="getImage(pokemon.id)" [alt]="pokemon.name" />
       </div>
-      <span class="card__number">#001</span>
-      <h2 class="card__name"><strong>Pikachu</strong></h2>
-      <div class="card__type card__type--electric">
-        <img src="../../assets/img/icon/electric.svg" alt="rayo" />
-      </div>
-      <button class="button" (click)="mostrarModal()">Estadísticas</button>
-    </div>
+      <span class="card__number">#{{ getId(pokemon.id) }}</span>
+      <h2 class="card__name"><strong>{{ pokemon.name }}</strong></h2>
 
-    <div class="card">
-      <div class="card__img">
-        <img
-          src="https://assets.pokemon.com/assets/cms2/img/pokedex/detail/004.png"
-          alt="charmander"
-        />
+      <div style="display: inline-flex">
+        @for(type of pokemon.types; track type.name){
+        <div [class]="'card__type card__type--'+type.type.name">
+          <img
+            [src]="'../../assets/img/icon/'+type.type.name+'.svg'"
+            alt="rayo"
+          />
+        </div>
+        }
       </div>
-      <span class="card__number">#001</span>
-      <h2 class="card__name"><strong>Charmander</strong></h2>
-      <div class="card__type card__type--fire">
-        <img src="../../assets/img/icon/electric.svg" alt="rayo" />
-      </div>
-      <button class="button" (click)="mostrarModal()">Estadísticas</button>
+
+      <button class="button" (click)="mostrarModal(pokemon)">
+        Estadísticas
+      </button>
     </div>
+    }
   </section>
 
+  @if(modalActive !== ''){
   <div [class]="'shadow-modal ' +modalActive">
     <div class="modal">
       <div class="modal__title">
-        <img src="../../assets/img/icon/left-arrow.png" alt="" (click)="ocultarModal()" />
-        <h2>Pikachu</h2>
-        <img src="../../assets/img/icon/x-regular.png" alt="" (click)="ocultarModal()" />
+        <img
+          src="../../assets/img/icon/left-arrow.png"
+          alt=""
+          (click)="ocultarModal()"
+        />
+        <h2>{{pokemonModal.name}}</h2>
+        <img
+          src="../../assets/img/icon/x-regular.png"
+          alt="x"
+          (click)="ocultarModal()"
+        />
       </div>
-      <span class="modal__number">#001</span>
-      <div class="card__type card__type--fire">
-        <img src="../../assets/img/icon/electric.svg" alt="rayo" />
+      <span class="modal__number">#{{ getId(pokemonModal.id) }}</span>
+      <div style="display: inline-flex">
+        @for(type of pokemonModal.types; track type.name){
+        <div [class]="'card__type card__type--'+type.type.name">
+          <img
+            [src]="'../../assets/img/icon/'+type.type.name+'.svg'"
+            alt="rayo"
+          />
+        </div>
+        }
       </div>
       <div class="card__img">
         <img
-          src="https://assets.pokemon.com/assets/cms2/img/pokedex/detail/004.png"
-          alt="charmander"
+          [src]="getImage(pokemonModal.id)" [alt]="pokemonModal.name"
         />
       </div>
       <div class="modal__info">
-        <span>1 m</span>
-        <span>13 kg</span>
+        <span>{{ pokemonModal.height / 10 }} m</span>
+        <span>{{ pokemonModal.weight / 10 }} kg</span>
       </div>
       <p class="modal__description">
-        Levanta su cola para vigilar los alrededores. A veces, puede ser
-        alcanzado por un rayo en esa pose.
+        {{ pokemonDescription }}
       </p>
 
       <div class="modal__metric">
         <div class="metric">
           <span>Velocidad</span>
           <div class="metric__range">
-            <div>50%</div>
+            <div [style]="'width:'+pokemonModal.stats[0].base_stat+'%;'">{{pokemonModal.stats[0].base_stat}}%</div>
           </div>
         </div>
         <div class="metric">
           <span>Defensa</span>
           <div class="metric__range">
-            <div>50%</div>
+            <div [style]="'width:'+pokemonModal.stats[3].base_stat+'%;'">{{pokemonModal.stats[3].base_stat}}%</div>
           </div>
         </div>
         <div class="metric">
           <span>Ataque</span>
           <div class="metric__range">
-            <div>50%</div>
+            <div [style]="'width:'+pokemonModal.stats[4].base_stat+'%;'">{{pokemonModal.stats[4].base_stat}}%</div>
           </div>
         </div>
         <div class="metric">
           <span>Puntos de vida</span>
           <div class="metric__range">
-            <div>50</div>
+            <div [style]="'width:'+pokemonModal.stats[5].base_stat+'%;'">{{pokemonModal.stats[5].base_stat}}%</div>
           </div>
         </div>
       </div>
     </div>
   </div>
+  }
 </ion-content>
